@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/flic_search"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_alignParentBottom="true"
+    android:orientation="vertical"
+    android:visibility="visible">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/flic_search_status_icon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="10dp"
+            android:background="#ff0000"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="5dp"
+            android:background="@drawable/toolbar_dropshadow_inverse"/>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/flic_search_border"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:background="@color/flic_red2">
+
+        <TextView
+            android:id="@+id/flic_search_status_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="Searching for new Flics..."
+            android:textColor="@color/flic_white"
+            android:textSize="16sp"/>
+
+        <ImageView
+            android:id="@+id/flic_search_stop_search"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="15dp"
+            android:background="#00ff00"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/flic_search_new_button_view"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:background="@color/flic_white"
+        android:orientation="vertical">
+
+        <RelativeLayout
+            android:id="@+id/flic_search_footer"
+            android:layout_width="match_parent"
+            android:layout_height="65dp"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:id="@+id/flic_search_footer_try_again_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/flic_search_try_again"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_margin="15dp"
+                    android:gravity="center_vertical"
+                    android:visibility="visible">
+
+                    <TextView
+                        android:id="@+id/flic_search_try_again_apply"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:background="@null"
+                        android:text="TRY AGAIN"
+                        android:textColor="@color/flic_blue2"
+                        android:textSize="16sp"/>
+
+                    <TextView
+                        android:id="@+id/flic_search_try_again_close"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="30dp"
+                        android:layout_toStartOf="@+id/flic_search_try_again_apply"
+                        android:background="@null"
+                        android:text="CLOSE"
+                        android:textColor="@color/flic_blue2"
+                        android:textSize="16sp"/>
+                </RelativeLayout>
+
+                <TextView
+                    android:id="@+id/flic_search_info_text"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="15dp"
+                    android:background="@null"
+                    android:gravity="center"
+                    android:paddingBottom="10dp"
+                    android:text="CLICK THE FLIC YOU WANT TO ADD"
+                    android:textColor="@color/flic_gray1"
+                    android:textSize="18sp"/>
+            </LinearLayout>
+
+            <View
+                android:id="@+id/flic_search_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_above="@id/flic_search_footer_try_again_wrapper"
+                android:layout_marginEnd="10dp"
+                android:layout_marginStart="10dp"
+                android:background="@color/flic_gray3"/>
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/flic_search_main_image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <TextView
+            android:id="@+id/flic_search_main_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textColor="@color/flic_gray1"
+            android:textSize="18sp"/>
+    </RelativeLayout>
+</LinearLayout>

@@ -38,6 +38,7 @@ public class FlicApplication extends Application {
     @Override
     public void onCreate() {
         FlicApplication.app = this;
+        Log.i("FlicApplication", "onCreate");
 
         this.buttons = new HashMap<>();
         this.buttonListeners = new HashMap<>();
@@ -100,6 +101,13 @@ public class FlicApplication extends Application {
             if (entry.getValue().containsKey(hash)) {
                 entry.getValue().remove(hash);
             }
+        }
+    }
+
+    public void saveButton(FlicButton flicButton) {
+        this.buttons.put(flicButton.getDeviceId(), flicButton);
+        for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
+            listener.buttonAdded(flicButton);
         }
     }
 

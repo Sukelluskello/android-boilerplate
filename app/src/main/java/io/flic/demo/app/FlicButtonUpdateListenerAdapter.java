@@ -28,11 +28,6 @@ public abstract class FlicButtonUpdateListenerAdapter implements FlicButtonUpdat
     }
 
     @Override
-    public void buttonUpdated(FlicButton flicButton) {
-
-    }
-
-    @Override
     public void buttonDeleted(FlicButton flicButton) {
 
     }

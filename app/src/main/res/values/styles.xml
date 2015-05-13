@@ -1,8 +1,26 @@
 <resources>
 
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
-        <!-- Customize your theme here. -->
+    <style name="flic_AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+
     </style>
 
+    <color name="flic_teal1">#448684</color>
+    <color name="flic_teal2">#4badac</color>
+    <color name="flic_teal3">#ace9e8</color>
+    <color name="flic_blue1">#4965cc</color>
+    <color name="flic_blue2">#6889fc</color>
+    <color name="flic_blue3">#c2d0fd</color>
+    <color name="flic_orange1">#fc5656</color>
+    <color name="flic_orange2">#fc6f6f</color>
+    <color name="flic_orange3">#fd9494</color>
+    <color name="flic_red1">#fa2854</color>
+    <color name="flic_red2">#fc3880</color>
+    <color name="flic_red3">#fd7cab</color>
+    <color name="flic_gray1">#424242</color>
+    <color name="flic_gray2">#757575</color>
+    <color name="flic_gray3">#bdbdbd</color>
+    <color name="flic_gray4">#eeeeee</color>
+    <color name="flic_white">#ffffff</color>
+    <color name="flic_error">#FA1E39</color>
+    
 </resources>

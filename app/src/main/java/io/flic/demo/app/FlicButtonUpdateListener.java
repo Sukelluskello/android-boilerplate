@@ -11,8 +11,6 @@ public interface FlicButtonUpdateListener {
 
     public void buttonAdded(FlicButton flicButton);
 
-    public void buttonUpdated(FlicButton flicButton);
-
     public void buttonDeleted(FlicButton flicButton);
 
     public String getHash();

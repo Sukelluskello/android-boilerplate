@@ -1,11 +1,34 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="io.flic.demo.app">
 
-    <application android:allowBackup="true"
-                 android:label="@string/app_name"
-                 android:icon="@drawable/ic_launcher"
-                 android:theme="@style/AppTheme">
+    <uses-sdk
+        android:minSdkVersion="19"
+        android:targetSdkVersion="21"/>
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
+
+    <application
+        android:name="io.flic.demo.app.FlicApplication"
+        android:allowBackup="true"
+        android:label="@string/app_name"
+        android:icon="@drawable/flic_logo"
+        android:theme="@style/flic_AppTheme">
+        <activity
+            android:name=".ui.MainActivity"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+            </intent-filter>
+        </activity>
+        <service
+            android:name="io.flic.demo.app.FlicService"
+            android:icon="@drawable/flic_logo"/>
     </application>
-
 </manifest>

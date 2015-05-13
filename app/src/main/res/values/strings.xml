@@ -1,3 +1,47 @@
 <resources>
     <string name="app_name">FlicDemo</string>
+
+    <string name="flic_search_searching_title">Searching for new Flics&#8230;</string>
+    <string name="flic_search_searching_info_text">Click the Flic you want to add once</string>
+
+    <string name="flic_search_bluetooth_off_title">Bluetooth is OFF</string>
+    <string name="flic_search_bluetooth_off_main_text">Turn on bluetooth and try again</string>
+    <string name="flic_search_bluetooth_off_popup_title">Bluetooth is OFF</string>
+    <string name="flic_search_bluetooth_off_popup_text">The communication between your device and your Flic is made possible
+    via Bluetooth and is therefore necessary at all times.</string>
+
+    <string name="flic_search_no_flics_found_title">Couldn\'t find any flics</string>
+    <string name="flic_search_no_flics_found_main_text">Make sure your Flic is within reach when you click</string>
+    <string name="flic_search_no_flics_found_popup_title">Couldn\'t find any flics</string>
+    <string name="flic_search_no_flics_found_popup_text">When the app is in search mode, make sure your physical Flic is very close
+    to this device and that you click it once so that it starts broadcasting. You have 10 seconds to do this.\n\nIf you still have
+    trouble finding your new Flic make sure it is in Public Mode. You can enable Public Mode on your Flic by Holding it down for 7 seconds.\n\nIn
+     rare events your device might have a problem. Please try restarting the Bluetooth and/or your device. If that doesn\'t work, feel free to
+    contact us at support@flic.io.</string>
+
+    <string name="flic_search_flic_discovered_title">Found new Flic, connecting&#8230;</string>
+    <string name="flic_search_flic_discovered_info_text">This can take a few seconds</string>
+
+    <string name="flic_search_no_connection_title">Couldn\'t connect to Flic</string>
+    <string name="flic_search_no_connection_main_text">Something went wrong and a connection to the Flic could not be established.
+    In some rare cases the bluetooth or the device has to be restarted. Try again or contact us at support@flic.io</string>
+
+    <string name="flic_search_private_mode_title">Your Flic is in Private Mode</string>
+    <string name="flic_search_private_mode_info_text">Click &amp; hold for 6 seconds to unlock it</string>
+    <string name="flic_search_private_mode_popup_title">Your Flic is in Private Mode</string>
+    <string name="flic_search_private_mode_popup_text">This probably means that your Flic has been connected to a device before, and is
+    therefore locked in order to prevent other devices from picking it up. To connect it to this device you have to set it to Public Mode.
+    \n\n\n<b>Put Flic in Public Mode:</b>\n\nHold down your Flic for 7 seconds. It should blink during this period. When the blinking stops, wait a
+    few seconds and press \"TRY AGAIN\".
+    </string>
+
+    <string name="flic_search_backend_unreachable_title">Couldn\'t reach Flic-server</string>
+    <string name="flic_search_backend_unreachable_main_text">Make sure you are connected to Internet using WIFI or mobile data and try again</string>
+    <string name="flic_search_backend_unreachable_popup_title">Couldn\'t reach Flic-server</string>
+    <string name="flic_search_backend_unreachable_popup_text">Before you can use a new Flic, it must be verified and unlocked against
+    our servers, which requires an Internet connection.\n\nWhen this is done, all communication between the Flic and this device is made
+    through Bluetooth.</string>
+
+    <string name="flic_search_connected_title">Connected</string>
+    <string name="flic_search_connected_info_text">Tap to add Flic</string>
 </resources>
