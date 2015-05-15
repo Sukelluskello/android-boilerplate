@@ -20,11 +20,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         Log.i("MainActivity", "onCreate");
         this.setContentView(R.layout.activity_main);
-
-        final LinearLayout list = (LinearLayout) findViewById(R.id.activity_main);
+        final LinearLayout list = (LinearLayout) findViewById(R.id.activity_main_list);
 
         final HashMap<String, View> viewMap = new HashMap<>();
-
         FlicApplication app = (FlicApplication) getApplication();
         app.addButtonUpdateListener(new FlicButtonUpdateListenerAdapter() {
 
@@ -49,5 +47,6 @@ public class MainActivity extends Activity {
                 return "MainActivity.onCreate";
             }
         });
+
     }
 }

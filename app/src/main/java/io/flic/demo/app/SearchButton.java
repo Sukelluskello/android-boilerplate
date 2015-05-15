@@ -3,13 +3,17 @@ package io.flic.demo.app;
 import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
@@ -55,7 +59,6 @@ public class SearchButton extends Button {
     public void onFinishInflate() {
         super.onFinishInflate();
         Log.i("SearchButton", "onFlinishInflate");
-        searchRunning = false;
         this.activity = (Activity) this.getContext();
         this.handlerThread = new HandlerThread(FlicApplication.getApp().getPackageName());
         this.handlerThread.start();
@@ -78,8 +81,6 @@ public class SearchButton extends Button {
                 SearchButton.this.onClickListener.onClick(view);
         }
     }
-
-    private static boolean searchRunning;
     private boolean animationRunning;
     private boolean firstDiscover;
     private LinearLayout searchView;
@@ -132,13 +133,21 @@ public class SearchButton extends Button {
                 })
                 .show();
     }
+    public int getScreenWidth() {
+        Display display = activity.getWindowManager().getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
+        return size.x;
+    }
+    public static float convertDpToPixel(float dp) {
+        DisplayMetrics metrics = FlicApplication.getApp().getResources().getDisplayMetrics();
+        float px = dp * (metrics.densityDpi / 160f);
+        return px;
+    }
 
     private void startSearchAnimation() {
-        if (searchRunning)
-            return;
         Log.i("SearchButton", "startSearchAnimation");
-        searchRunning = true;
-        this.searchView = (LinearLayout) this.activity.getLayoutInflater().inflate(R.layout.flic_search, null);
+        this.searchView = (LinearLayout) this.activity.findViewById(R.id.flic_search);
         this.searchTitle = (TextView) searchView.findViewById(R.id.flic_search_status_title);
         this.searchIcon = (ImageView) searchView.findViewById(R.id.flic_search_status_icon);
         this.stopSearch = (ImageView) searchView.findViewById(R.id.flic_search_stop_search);
@@ -150,6 +159,34 @@ public class SearchButton extends Button {
         this.searchInfoText = (TextView) searchView.findViewById(R.id.flic_search_info_text);
         this.searchBorder = (RelativeLayout) searchView.findViewById(R.id.flic_search_border);
         this.searchMainText = (TextView) searchView.findViewById(R.id.flic_search_main_text);
+        Typeface typeFace = Typeface.createFromAsset(this.activity.getAssets(), "fonts/Roboto-Medium.ttf");
+        this.searchAgainClose.setTypeface(typeFace);
+        this.searchAgainApply.setTypeface(typeFace);
+        this.searchAgainApply.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchButton.this.startSearchAnimation();
+            }
+        });
+        this.searchAgainClose.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SearchButton.this.endSearchAnimation();
+            }
+        });
+        RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(this.getScreenWidth() / 2, ViewGroup.LayoutParams.MATCH_PARENT);
+        lp2.addRule(RelativeLayout.ABOVE, activity.findViewById(R.id.flic_search_footer).getId());
+        lp2.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        this.searchMainImage.setLayoutParams(lp2);
+
+        lp2 = new RelativeLayout.LayoutParams((int) (this.getScreenWidth() / 1.2), ViewGroup.LayoutParams.MATCH_PARENT);
+        lp2.addRule(RelativeLayout.ABOVE, searchView.findViewById(R.id.flic_search_footer).getId());
+        lp2.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        this.searchMainText.setLayoutParams(lp2);
+
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (this.getScreenWidth() / 2) + ((int) convertDpToPixel(65)));
+        this.searchView.findViewById(R.id.flic_search_new_button_view).setLayoutParams(lp);
+
 
         FlicApplication.getApp().addButtonUpdateListener(new FlicButtonUpdateListenerAdapter() {
             @Override

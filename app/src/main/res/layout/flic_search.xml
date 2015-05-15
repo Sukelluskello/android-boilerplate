@@ -6,7 +6,7 @@
     android:layout_height="wrap_content"
     android:layout_alignParentBottom="true"
     android:orientation="vertical"
-    android:visibility="visible">
+    android:visibility="gone">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,8 +18,7 @@
             android:id="@+id/flic_search_status_icon"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_margin="10dp"
-            android:background="#ff0000"/>
+            android:layout_margin="10dp"/>
 
         <View
             android:layout_width="match_parent"
@@ -30,26 +29,23 @@
     <RelativeLayout
         android:id="@+id/flic_search_border"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:background="@color/flic_red2">
+        android:layout_height="50dp">
 
         <TextView
             android:id="@+id/flic_search_status_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="Searching for new Flics..."
             android:textColor="@color/flic_white"
             android:textSize="16sp"/>
 
         <ImageView
             android:id="@+id/flic_search_stop_search"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
+            android:layout_width="17dp"
+            android:layout_height="17dp"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="15dp"
-            android:background="#00ff00"/>
+            android:layout_marginEnd="15dp"/>
     </RelativeLayout>
 
     <RelativeLayout
@@ -111,7 +107,6 @@
                     android:background="@null"
                     android:gravity="center"
                     android:paddingBottom="10dp"
-                    android:text="CLICK THE FLIC YOU WANT TO ADD"
                     android:textColor="@color/flic_gray1"
                     android:textSize="18sp"/>
             </LinearLayout>
