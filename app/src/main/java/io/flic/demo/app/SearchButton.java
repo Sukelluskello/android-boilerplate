@@ -14,10 +14,12 @@ import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -76,14 +78,14 @@ public class SearchButton extends Button {
         @Override
         public void onClick(View view) {
             Log.i("SearchButton", "onClick");
-            startSearchAnimation();
+            loadView();
             if (SearchButton.this.onClickListener != null)
                 SearchButton.this.onClickListener.onClick(view);
         }
     }
     private boolean animationRunning;
     private boolean firstDiscover;
-    private LinearLayout searchView;
+    private RelativeLayout searchView;
     private TextView searchTitle;
     private ImageView searchIcon;
     private ImageView stopSearch;
@@ -144,10 +146,27 @@ public class SearchButton extends Button {
         float px = dp * (metrics.densityDpi / 160f);
         return px;
     }
+    private void loadView() {
+        if (animationRunning) return;
+
+        View.inflate(this.activity, R.layout.flic_search, (FrameLayout)this.activity.findViewById(android.R.id.content));
+        this.searchView = (RelativeLayout) this.activity.findViewById(R.id.flic_search);
+        this.searchView.getViewTreeObserver().addOnGlobalLayoutListener(
+                new ViewTreeObserver.OnGlobalLayoutListener() {
+
+                    @Override
+                    public void onGlobalLayout() {
+                        SearchButton.this.searchView.getViewTreeObserver().removeGlobalOnLayoutListener(this);
+                        SearchButton.this.searchView.setVisibility(View.GONE);
+                        SearchButton.this.startSearchAnimation();
+                    }
+
+                });
+    }
 
     private void startSearchAnimation() {
         Log.i("SearchButton", "startSearchAnimation");
-        this.searchView = (LinearLayout) this.activity.findViewById(R.id.flic_search);
+
         this.searchTitle = (TextView) searchView.findViewById(R.id.flic_search_status_title);
         this.searchIcon = (ImageView) searchView.findViewById(R.id.flic_search_status_icon);
         this.stopSearch = (ImageView) searchView.findViewById(R.id.flic_search_stop_search);
@@ -175,7 +194,7 @@ public class SearchButton extends Button {
             }
         });
         RelativeLayout.LayoutParams lp2 = new RelativeLayout.LayoutParams(this.getScreenWidth() / 2, ViewGroup.LayoutParams.MATCH_PARENT);
-        lp2.addRule(RelativeLayout.ABOVE, activity.findViewById(R.id.flic_search_footer).getId());
+        lp2.addRule(RelativeLayout.ABOVE, searchView.findViewById(R.id.flic_search_footer).getId());
         lp2.addRule(RelativeLayout.CENTER_HORIZONTAL);
         this.searchMainImage.setLayoutParams(lp2);
 
@@ -513,6 +532,7 @@ public class SearchButton extends Button {
                 SearchButton.this.animationRunning = false;
                 SearchButton.this.searchView.setClickable(false);
                 SearchButton.this.searchView.setVisibility(View.GONE);
+                ((ViewGroup)SearchButton.this.activity.findViewById(android.R.id.content)).removeView(searchView);
             }
 
             @Override
