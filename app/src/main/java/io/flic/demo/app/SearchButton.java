@@ -10,7 +10,6 @@ import android.os.HandlerThread;
 import android.support.v7.app.AlertDialog;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.Display;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +63,9 @@ public class SearchButton extends Button {
         this.handlerThread = new HandlerThread(FlicApplication.getApp().getPackageName());
         this.handlerThread.start();
         this.handler = new Handler(this.handlerThread.getLooper());
+        this.setText("SEARCH");
+        this.setBackgroundColor(FlicApplication.getApp().getResources().getColor(R.color.flic_white));
+        this.setTextColor(FlicApplication.getApp().getResources().getColor(R.color.flic_gray1));
         super.setOnClickListener(new SearchClickListener());
     }
 

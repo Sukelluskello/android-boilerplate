@@ -43,5 +43,5 @@
     through Bluetooth.</string>
 
     <string name="flic_search_connected_title">Connected</string>
-    <string name="flic_search_connected_info_text">Tap to add Flic</string>
+    <string name="flic_search_connected_info_text">Flic successfully added</string>
 </resources>

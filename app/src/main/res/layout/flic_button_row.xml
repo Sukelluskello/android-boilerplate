@@ -21,21 +21,30 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_toStartOf="@id/flic_button_row_connect_toggle">
         <ImageView
             android:id="@+id/flic_button_row_icon"
             android:layout_width="40dp"
-            android:background="#ff0000"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="10dp"
+            android:background="@drawable/main_add_flic_white_connected"
+            android:layout_marginEnd="20dp"
             android:layout_height="40dp" />
         <TextView
             android:id="@+id/flic_button_row_name"
             android:text="BUTTON NAME"
+            android:textColor="@color/flic_white"
+            android:textSize="17sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@color/flic_white"/>
 
 </RelativeLayout>
