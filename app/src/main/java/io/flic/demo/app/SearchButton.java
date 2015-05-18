@@ -557,7 +557,9 @@ public class SearchButton extends Button {
         YoYo.with(Techniques.Shake)
                 .duration(800)
                 .playOn(this.searchIcon);
-        this.stopSearch.setVisibility(View.INVISIBLE);
+        this.stopSearch.setVisibility(View.VISIBLE);
+        this.stopSearch.setBackground(this.getResources().getDrawable(R.drawable.main_add_flic_cancel_icon));
+        this.setSearchSmallIconAction(this.SEARCH_CLOSE_DIALOG);
         this.searchAgain.setVisibility(View.GONE);
         this.searchMainImage.setVisibility(View.VISIBLE);
         this.searchMainImage.setBackground(this.getResources().getDrawable(R.drawable.main_add_flic_mint_connected));

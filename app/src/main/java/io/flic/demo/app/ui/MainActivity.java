@@ -19,11 +19,18 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.i("MainActivity", "onCreate");
+
         this.setContentView(R.layout.activity_main);
         final LinearLayout list = (LinearLayout) findViewById(R.id.activity_main_list);
 
         final HashMap<String, View> viewMap = new HashMap<>();
         FlicApplication app = (FlicApplication) getApplication();
+        for (FlicButton flicButton : app.getButtons()) {
+            TextView textView = new TextView(MainActivity.this);
+            textView.setText(flicButton.getDeviceId());
+            viewMap.put(flicButton.getDeviceId(), textView);
+            list.addView(textView);
+        }
         app.addButtonUpdateListener(new FlicButtonUpdateListenerAdapter() {
 
             @Override

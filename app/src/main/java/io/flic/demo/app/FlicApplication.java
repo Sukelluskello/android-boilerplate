@@ -11,13 +11,16 @@ import android.util.Log;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map.Entry;
+import java.util.Set;
 
 public class FlicApplication extends Application {
 
     private static FlicApplication app;
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private HashMap<String, FlicButton> buttons;
+    private Set<String> whitelist;
     private HashMap<String, FlicButtonUpdateListener> buttonListeners;
     private HashMap<String, HashMap<String, FlicButtonEventListener>> buttonEventListeners;
     private ServiceConnection serviceConnection;
@@ -35,6 +38,18 @@ public class FlicApplication extends Application {
         return bluetoothAdapter.isEnabled();
     }
 
+    public void whitelistDeviceId(String deviceId) {
+        whitelist.add(deviceId);
+    }
+
+    public void unWhitelistDeviceId(String deviceId) {
+        whitelist.remove(deviceId);
+    }
+
+    private void whitelist() {
+        this.whitelistDeviceId("08:d4:2c:01:5b:00");
+    }
+
     @Override
     public void onCreate() {
         FlicApplication.app = this;
@@ -43,6 +58,7 @@ public class FlicApplication extends Application {
         this.buttons = new HashMap<>();
         this.buttonListeners = new HashMap<>();
         this.buttonEventListeners = new HashMap<>();
+        this.whitelist = new HashSet<>();
 
         Intent i = new Intent(this, FlicService.class);
         this.startService(i);
@@ -55,7 +71,7 @@ public class FlicApplication extends Application {
                 for (io.flic.lib.FlicButton flicButton : FlicApplication.this.flicService.getButtons()) {
                     boolean connected = flicButton.getConnectionState() == io.flic.lib.FlicButton.STATE_CONNECTED;
                     FlicButton button = new FlicButton(
-                            flicButton.getButtonId(),
+                            flicButton.getButtonId().toLowerCase(),
                             flicButton.getButtonUuid(),
                             FlicButton.FlicColor.FLIC_COLOR_MINT,
                             connected);
@@ -63,7 +79,7 @@ public class FlicApplication extends Application {
                         listener.buttonAdded(button);
                     }
                     if (!connected) {
-                        FlicApplication.this.flicService.connectButton(flicButton.getButtonId());
+                        FlicApplication.this.flicService.connectButton(flicButton.getButtonId().toLowerCase());
                     }
                 }
             }
@@ -73,7 +89,7 @@ public class FlicApplication extends Application {
                 FlicApplication.this.flicService = null;
             }
         };
-
+        this.whitelist();
         this.bindService(i, this.serviceConnection, 0);
     }
 
@@ -120,25 +136,23 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonDiscover(String deviceId, int rssi, boolean isPrivateMode) {
-
-        if (this.buttons.containsKey(deviceId)) {
-            FlicButton flicButton = this.buttons.get(deviceId);
-            this.flicService.connectButton(deviceId);
-        }
-        for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
-            listener.buttonDiscovered(deviceId, rssi, isPrivateMode);
+        Log.i("FlicApplication", "notifyButtonDiscover: " + deviceId);
+        if (this.whitelist.contains(deviceId)) {
+            for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
+                listener.buttonDiscovered(deviceId, rssi, isPrivateMode);
+            }
+        } else {
+            Log.i("FlicApplication", "notifyButtonDiscover: deviceId not whitelisted");
         }
     }
 
     public void notifyButtonConnect(String deviceId, String uuid) {
         Log.i("FlicApplication", "notifyButtonConnect: " + deviceId);
-        Log.i("FlicApplication.notifyButtonConnect", "ButtonUpdateListeners: " + this.buttonListeners.values().size());
         for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
             listener.buttonConnected(deviceId);
         }
 
         if (this.buttonEventListeners.containsKey(deviceId)) {
-            Log.i("FlicApplication.notifyButtonConnect", "ButtonEventListeners: " + this.buttonEventListeners.get(deviceId).values().size());
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonConnected(deviceId, uuid);
             }
@@ -152,13 +166,11 @@ public class FlicApplication extends Application {
             Log.i("FlicApplication", "Setting connected true");
             flicButton.setConnected();
         }
-        Log.i("FlicApplication", "ButtonUpdateListeners: " + this.buttonListeners.values().size());
         for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
             listener.buttonReady(deviceId);
         }
 
         if (this.buttonEventListeners.containsKey(deviceId)) {
-            Log.i("FlicApplication", "ButtonEventListeners: " + this.buttonEventListeners.get(deviceId).values().size());
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonReady(deviceId, uuid);
             }
@@ -167,7 +179,6 @@ public class FlicApplication extends Application {
 
     public void notifyButtonConnectionFailed(String deviceId, int status) {
         Log.i("FlicApplication", "notifyButtonConnectionFailed: " + deviceId);
-
         if (this.buttonEventListeners.containsKey(deviceId)) {
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonConnectionFailed(deviceId, status);

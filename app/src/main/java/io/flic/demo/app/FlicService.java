@@ -161,6 +161,7 @@ public class FlicService extends Service {
     }
 
     public synchronized void startScan() {
+        Log.i("FlicService", "startScan", new Exception());
         if (!this.manager.isScanning()) {
             this.manager.startScan();
         }
