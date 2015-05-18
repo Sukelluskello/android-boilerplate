@@ -60,7 +60,6 @@ public class SearchButton extends Button {
     @Override
     public void onFinishInflate() {
         super.onFinishInflate();
-        Log.i("SearchButton", "onFlinishInflate");
         this.activity = (Activity) this.getContext();
         this.handlerThread = new HandlerThread(FlicApplication.getApp().getPackageName());
         this.handlerThread.start();
@@ -77,7 +76,6 @@ public class SearchButton extends Button {
 
         @Override
         public void onClick(View view) {
-            Log.i("SearchButton", "onClick");
             loadView();
             if (SearchButton.this.onClickListener != null)
                 SearchButton.this.onClickListener.onClick(view);
@@ -165,8 +163,6 @@ public class SearchButton extends Button {
     }
 
     private void startSearchAnimation() {
-        Log.i("SearchButton", "startSearchAnimation");
-
         this.searchTitle = (TextView) searchView.findViewById(R.id.flic_search_status_title);
         this.searchIcon = (ImageView) searchView.findViewById(R.id.flic_search_status_icon);
         this.stopSearch = (ImageView) searchView.findViewById(R.id.flic_search_stop_search);

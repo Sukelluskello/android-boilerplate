@@ -26,6 +26,7 @@ public class FlicService extends Service {
 
     @Override
     public void onCreate() {
+        Log.i("FlicService", "Starting FlicService");
         Intent notificationIntent = new Intent(this, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(this,
                 0, notificationIntent,
@@ -47,6 +48,7 @@ public class FlicService extends Service {
             @Override
             public boolean onDiscover(String deviceId, int rssi, boolean isPrivateMode) {
                 deviceId = deviceId.toLowerCase();
+                Log.i("FlicService", "onDiscover: " + deviceId);
                 FlicService.this.buttonDiscovery(deviceId, rssi, isPrivateMode);
                 return true;
             }
@@ -65,34 +67,41 @@ public class FlicService extends Service {
         flicButton.setEventListener(new FlicButtonAdapter() {
             @Override
             public void onConnect(FlicButton button) {
-                Log.i("FlicService", "onConnect");
-                FlicService.this.buttonConnect(button.getButtonId().toLowerCase(), button.getButtonUuid());
+                String deviceId = button.getButtonId().toLowerCase();
+                Log.i("FlicService", "onConnect: " + deviceId);
+                FlicService.this.buttonConnect(deviceId, button.getButtonUuid());
             }
 
             @Override
             public void onReady(FlicButton button) {
-                Log.i("FlicService", "onReady");
-                FlicService.this.buttonReady(button.getButtonId().toLowerCase(), button.getButtonUuid());
+                String deviceId = button.getButtonId().toLowerCase();
+                Log.i("FlicService", "onReady: " + deviceId);
+                FlicService.this.buttonReady(deviceId, button.getButtonUuid());
             }
 
             @Override
             public void onDisconnect(FlicButton button, int flicError) {
-                Log.i("FlicService", "onDisconnect" + flicError);
-                FlicService.this.buttonDisconnect(button.getButtonId().toLowerCase(), flicError);
+                String deviceId = button.getButtonId().toLowerCase();
+                Log.i("FlicService", "onDisconnect: " + deviceId + " [error: " + flicError + "]");
+                FlicService.this.buttonDisconnect(deviceId, flicError);
             }
 
             @Override
             public void onConnectionFailed(FlicButton button, int status) {
-                Log.i("FlicService", "onConnectionFailed");
-                FlicService.this.buttonConnectionFailed(button.getButtonId().toLowerCase(), status);
+                String deviceId = button.getButtonId().toLowerCase();
+                Log.i("FlicService", "onConnectionFailed: " + deviceId + " [status: " + status + "]");
+                FlicService.this.buttonConnectionFailed(deviceId, status);
             }
 
             @Override
             public void onButtonUpOrDown(FlicButton button, boolean wasQueued, int timeDiff, boolean isUp, boolean isDown) {
+                String deviceId = button.getButtonId().toLowerCase();
                 if (isDown) {
-                    FlicService.this.buttonDown(button.getButtonId().toLowerCase());
+                    Log.i("FlicService", "onButtonDown: " + deviceId);
+                    FlicService.this.buttonDown(deviceId);
                 } else {
-                    FlicService.this.buttonUp(button.getButtonId().toLowerCase());
+                    Log.i("FlicService", "onButtonUp: " + deviceId);
+                    FlicService.this.buttonUp(deviceId);
                 }
             }
 
@@ -103,13 +112,17 @@ public class FlicService extends Service {
                                                           boolean isSingleClick,
                                                           boolean isDoubleClick,
                                                           boolean isHold) {
-                Log.i("FlicService", "onButtonSingleOrDoubleClickOrHold");
+                String deviceId = button.getButtonId().toLowerCase();
+
                 if (isSingleClick) {
-                    FlicService.this.buttonClick(button.getButtonId().toLowerCase());
+                    Log.i("FlicService", "onButtonSingleClick: " + deviceId);
+                    FlicService.this.buttonClick(deviceId);
                 } else if (isDoubleClick) {
-                    FlicService.this.buttonDoubleClick(button.getButtonId().toLowerCase());
+                    Log.i("FlicService", "onButtonDoubleClick: " + deviceId);
+                    FlicService.this.buttonDoubleClick(deviceId);
                 } else if (isHold) {
-                    FlicService.this.buttonHold(button.getButtonId().toLowerCase());
+                    Log.i("FlicService", "onButtonHold: " + deviceId);
+                    FlicService.this.buttonHold(deviceId);
                 }
             }
         });
@@ -161,13 +174,16 @@ public class FlicService extends Service {
     }
 
     public synchronized void startScan() {
-        Log.i("FlicService", "startScan", new Exception());
         if (!this.manager.isScanning()) {
+            Log.i("FlicService", "startScan");
             this.manager.startScan();
+        } else {
+            Log.i("FlicService", "startScan: already scanning");
         }
     }
 
     public synchronized void scanFor(final int milliseconds) {
+        Log.i("FlicService", "scanFor " + milliseconds + "ms");
         if (!this.manager.isScanning()) {
             this.manager.startScan();
             new AsyncTask<Void, Void, Void>() {
@@ -176,21 +192,29 @@ public class FlicService extends Service {
                 protected Void doInBackground(Void... params) {
                     try {
                         Thread.sleep(milliseconds);
-                    } catch (InterruptedException ignored) {
-
+                    } catch (InterruptedException e) {
+                        Log.i("FlicService", "Scan timeout was interrupted", e);
                     }
                     if (FlicService.this.manager.isScanning()) {
                         FlicService.this.manager.stopScan();
+                        Log.i("FlicService", "scanFor timeout: Stopped scan");
+                    } else {
+                        Log.i("FlicService", "scanFor timeout: Scan is not running");
                     }
                     return null;
                 }
             }.execute();
+        } else {
+            Log.i("FlicService", "scanFor: already scanning");
         }
     }
 
     public synchronized void stopScan() {
         if (this.manager.isScanning()) {
             this.manager.stopScan();
+            Log.i("FlicService", "Stopped scan");
+        } else {
+            Log.i("FlicService", "stopScan: Scan is not running");
         }
     }
 
@@ -198,6 +222,7 @@ public class FlicService extends Service {
         FlicButton button = this.manager.getButtonByDeviceId(deviceId);
         FlicService.this.addFlicButtonListener(button);
         button.connect();
+        Log.i("FlicService", "Connecting to button: " + deviceId);
     }
 
     public synchronized void disconnectButton(String deviceId) {
@@ -205,7 +230,7 @@ public class FlicService extends Service {
         if (button != null) {
             button.disconnectOrAbortPendingConnection();
         } else {
-            Log.i("FlicService.disconnectButton", "Cant find button: " + deviceId);
+            Log.i("FlicService", "disconnectButton: Cant find button: " + deviceId);
         }
     }
 
@@ -213,8 +238,9 @@ public class FlicService extends Service {
         FlicButton button = this.manager.getButtonByDeviceId(deviceId);
         if (button != null) {
             this.manager.forgetButton(button);
+            Log.i("FlicService", "Deleted Button: " + deviceId);
         } else {
-            Log.i("FlicService.removeButton", "Cant find button: " + deviceId);
+            Log.i("FlicService", "deleteButton: Cant find button: " + deviceId);
         }
     }
 

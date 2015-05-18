@@ -53,7 +53,6 @@ public class FlicApplication extends Application {
     @Override
     public void onCreate() {
         FlicApplication.app = this;
-        Log.i("FlicApplication", "onCreate");
 
         this.buttons = new HashMap<>();
         this.buttonListeners = new HashMap<>();
@@ -136,7 +135,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonDiscover(String deviceId, int rssi, boolean isPrivateMode) {
-        Log.i("FlicApplication", "notifyButtonDiscover: " + deviceId);
         if (this.whitelist.contains(deviceId)) {
             for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
                 listener.buttonDiscovered(deviceId, rssi, isPrivateMode);
@@ -147,7 +145,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonConnect(String deviceId, String uuid) {
-        Log.i("FlicApplication", "notifyButtonConnect: " + deviceId);
         for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
             listener.buttonConnected(deviceId);
         }
@@ -160,10 +157,8 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonReady(String deviceId, String uuid) {
-        Log.i("FlicApplication.notifyButtonReady", "notifyButtonReady: " + deviceId);
         FlicButton flicButton = this.buttons.get(deviceId);
         if (flicButton != null) {
-            Log.i("FlicApplication", "Setting connected true");
             flicButton.setConnected();
         }
         for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
@@ -178,7 +173,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonConnectionFailed(String deviceId, int status) {
-        Log.i("FlicApplication", "notifyButtonConnectionFailed: " + deviceId);
         if (this.buttonEventListeners.containsKey(deviceId)) {
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonConnectionFailed(deviceId, status);
@@ -187,7 +181,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonDisconnect(String deviceId, int status) {
-        Log.i("FlicApplication.notifyButtonDisconnect", deviceId);
         FlicButton flicButton = this.buttons.get(deviceId);
         if (flicButton != null) {
             flicButton.setDisconnected();
@@ -203,7 +196,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonDown(String deviceId) {
-        Log.i("FlicApplication.notifyButtonDown", deviceId);
         if (this.buttonEventListeners.containsKey(deviceId)) {
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonDown(deviceId);
@@ -213,7 +205,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonUp(String deviceId) {
-        Log.i("FlicApplication.notifyButtonUp", deviceId);
         if (this.buttonEventListeners.containsKey(deviceId)) {
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonUp(deviceId);
@@ -222,7 +213,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonClick(String deviceId) {
-        Log.i("FlicApplication.notifyButtonClick", deviceId);
         if (this.buttonEventListeners.containsKey(deviceId)) {
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonClick(deviceId);
@@ -231,7 +221,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonDoubleClick(String deviceId) {
-        Log.i("FlicApplication.notifyButtonDoubleClick", deviceId);
         if (this.buttonEventListeners.containsKey(deviceId)) {
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonDoubleClick(deviceId);
@@ -240,7 +229,6 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonHold(String deviceId) {
-        Log.i("FlicApplication.notifyButtonHold", deviceId);
         if (this.buttonEventListeners.containsKey(deviceId)) {
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonHold(deviceId);
