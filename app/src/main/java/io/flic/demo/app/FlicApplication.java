@@ -46,10 +46,6 @@ public class FlicApplication extends Application {
         whitelist.remove(deviceId);
     }
 
-    private void whitelist() {
-        this.whitelistDeviceId("08:d4:2c:01:5b:00");
-    }
-
     @Override
     public void onCreate() {
         FlicApplication.app = this;
@@ -69,16 +65,18 @@ public class FlicApplication extends Application {
                 FlicApplication.this.flicService = binder.getService();
                 for (io.flic.lib.FlicButton flicButton : FlicApplication.this.flicService.getButtons()) {
                     boolean connected = flicButton.getConnectionState() == io.flic.lib.FlicButton.STATE_CONNECTED;
+                    String deviceId = flicButton.getButtonId().toLowerCase();
                     FlicButton button = new FlicButton(
-                            flicButton.getButtonId().toLowerCase(),
+                            deviceId,
                             flicButton.getButtonUuid(),
                             FlicButton.FlicColor.FLIC_COLOR_MINT,
                             connected);
+                    FlicApplication.this.buttons.put(button.getDeviceId(), button);
                     for (FlicButtonUpdateListener listener : FlicApplication.this.buttonListeners.values()) {
                         listener.buttonAdded(button);
                     }
                     if (!connected) {
-                        FlicApplication.this.flicService.connectButton(flicButton.getButtonId().toLowerCase());
+                        FlicApplication.this.flicService.connectButton(deviceId);
                     }
                 }
             }
@@ -88,7 +86,7 @@ public class FlicApplication extends Application {
                 FlicApplication.this.flicService = null;
             }
         };
-        this.whitelist();
+
         this.bindService(i, this.serviceConnection, 0);
     }
 
@@ -116,13 +114,6 @@ public class FlicApplication extends Application {
             if (entry.getValue().containsKey(hash)) {
                 entry.getValue().remove(hash);
             }
-        }
-    }
-
-    public void saveButton(FlicButton flicButton) {
-        this.buttons.put(flicButton.getDeviceId(), flicButton);
-        for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
-            listener.buttonAdded(flicButton);
         }
     }
 
@@ -158,7 +149,13 @@ public class FlicApplication extends Application {
 
     public void notifyButtonReady(String deviceId, String uuid) {
         FlicButton flicButton = this.buttons.get(deviceId);
-        if (flicButton != null) {
+        if (flicButton == null) {
+            flicButton = new FlicButton(deviceId, uuid, FlicButton.FlicColor.FLIC_COLOR_MINT, true);
+            this.buttons.put(deviceId, flicButton);
+            for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
+                listener.buttonAdded(flicButton);
+            }
+        } else {
             flicButton.setConnected();
         }
         for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {

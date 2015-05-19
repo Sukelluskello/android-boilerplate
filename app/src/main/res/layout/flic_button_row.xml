@@ -22,6 +22,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_centerVertical="true"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_toStartOf="@id/flic_button_row_connect_toggle">

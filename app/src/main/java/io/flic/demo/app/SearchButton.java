@@ -394,6 +394,7 @@ public class SearchButton extends Button {
     private void flicDiscoveredFromSearchFailedToConnect(int status) {
         handler.removeCallbacks(this.endConnectAnimation);
         this.animation.cancel();
+        FlicApplication.getApp().getFlicService().stopScan();
 
         switch (status) {
             case FlicError.BUTTON_IS_PRIVATE:
@@ -495,6 +496,7 @@ public class SearchButton extends Button {
     }
 
     private void flicDiscoveredFromSearchConnectTimedOut() {
+        FlicApplication.getApp().getFlicService().stopScan();
         this.animation.cancel();
         handler.removeCallbacks(this.endConnectAnimation);
         this.searchTitle.setText(this.getResources().getString(R.string.flic_search_no_connection_title));
@@ -545,7 +547,6 @@ public class SearchButton extends Button {
     private void flicConnectedFromSearch(final String deviceId, final String uuid) {
         FlicApplication.getApp().getFlicService().stopScan();
         FlicButton flicButton = new FlicButton(deviceId, uuid, FlicButton.FlicColor.FLIC_COLOR_MINT, true);
-        FlicApplication.getApp().saveButton(flicButton);
         handler.removeCallbacks(this.endConnectAnimation);
         this.animation.cancel();
 
