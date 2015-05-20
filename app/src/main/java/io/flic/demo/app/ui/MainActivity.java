@@ -15,11 +15,10 @@ import com.daimajia.androidanimations.library.YoYo;
 
 import java.util.HashMap;
 
-import io.flic.demo.app.FlicApplication;
-import io.flic.demo.app.FlicButton;
-import io.flic.demo.app.FlicButtonEventListener;
-import io.flic.demo.app.FlicButtonEventListenerAdapter;
-import io.flic.demo.app.FlicButtonUpdateListenerAdapter;
+import io.flic.demo.app.flic.FlicApplication;
+import io.flic.demo.app.flic.FlicButton;
+import io.flic.demo.app.flic.FlicButtonEventListenerAdapter;
+import io.flic.demo.app.flic.FlicButtonUpdateListenerAdapter;
 import io.flic.demo.app.R;
 
 public class MainActivity extends Activity {
@@ -49,8 +48,7 @@ public class MainActivity extends Activity {
     }
 
     private void setupWhitelist() {
-        FlicApplication.getApp().whitelistDeviceId("08:d4:2c:01:5b:00");
-        FlicApplication.getApp().whitelistDeviceId("08:d4:2c:01:b1:00");
+        FlicApplication.getApp().whitelistDeviceId("ATsA");
     }
 
     @Override
@@ -106,7 +104,7 @@ public class MainActivity extends Activity {
                 (Context.LAYOUT_INFLATER_SERVICE);
         for (final FlicButton flicButton : FlicApplication.getApp().getButtons()) {
             RelativeLayout flicButtonRow = (RelativeLayout) inflater.inflate(R.layout.flic_button_row, null);
-            ((TextView)flicButtonRow.findViewById(R.id.flic_button_row_name)).setText(flicButton.getDeviceId());
+            ((TextView)flicButtonRow.findViewById(R.id.flic_button_row_name)).setText(FlicApplication.base64DeviceId(flicButton.getDeviceId()));
 
 
             if (flicButton.isConnected()) {
@@ -162,9 +160,9 @@ public class MainActivity extends Activity {
                 @Override
                 public void onClick(View view) {
                     if (flicButton.isConnected()) {
-                        FlicApplication.getApp().getFlicService().disconnectButton(flicButton.getDeviceId());
+                        FlicApplication.getApp().disconnectButton(flicButton.getDeviceId());
                     } else {
-                        FlicApplication.getApp().getFlicService().connectButton(flicButton.getDeviceId());
+                        FlicApplication.getApp().connectButton(flicButton.getDeviceId());
                     }
                 }
             });

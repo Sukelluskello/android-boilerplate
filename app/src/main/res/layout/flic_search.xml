@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<io.flic.demo.app.InterceptRelativeLayout
+<io.flic.demo.app.ui.InterceptRelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/flic_search"
     android:layout_width="match_parent"
@@ -138,4 +138,4 @@
                 android:textSize="18sp"/>
         </RelativeLayout>
     </LinearLayout>
-</io.flic.demo.app.InterceptRelativeLayout>
+</io.flic.demo.app.ui.InterceptRelativeLayout>

@@ -1,4 +1,4 @@
-package io.flic.demo.app;
+package io.flic.demo.app.flic;
 
 public interface FlicButtonUpdateListener {
     public void buttonDiscovered(String deviceId, int rssi, boolean isPrivateMode);

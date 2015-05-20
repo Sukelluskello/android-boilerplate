@@ -1,25 +1,19 @@
-package io.flic.demo.app;
+package io.flic.demo.app.flic;
 
 public class FlicButton {
 
     private final String deviceId;
-    private final String uuid;
     private final FlicColor color;
     private boolean connected;
 
-    public FlicButton(String deviceId, String uuid, FlicColor color, boolean connected) {
+    public FlicButton(String deviceId, FlicColor color, boolean connected) {
         this.deviceId = deviceId;
-        this.uuid = uuid;
         this.color = color;
         this.connected = connected;
     }
 
     public String getDeviceId() {
         return this.deviceId;
-    }
-
-    public String getUUID() {
-        return this.uuid;
     }
 
     public FlicColor getColor() {

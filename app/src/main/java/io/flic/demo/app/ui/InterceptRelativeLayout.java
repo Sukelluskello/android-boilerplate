@@ -1,4 +1,4 @@
-package io.flic.demo.app;
+package io.flic.demo.app.ui;
 
 import android.content.Context;
 import android.util.AttributeSet;

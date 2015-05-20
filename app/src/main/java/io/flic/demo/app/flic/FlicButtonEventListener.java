@@ -1,4 +1,4 @@
-package io.flic.demo.app;
+package io.flic.demo.app.flic;
 
 public interface FlicButtonEventListener {
     public void buttonDown(String deviceId);

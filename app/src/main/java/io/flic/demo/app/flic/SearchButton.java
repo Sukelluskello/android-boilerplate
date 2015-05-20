@@ -1,4 +1,4 @@
-package io.flic.demo.app;
+package io.flic.demo.app.flic;
 
 import android.app.Activity;
 import android.content.Context;
@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
+import io.flic.demo.app.R;
 import io.flic.lib.FlicError;
 
 public class SearchButton extends Button {
@@ -64,8 +65,8 @@ public class SearchButton extends Button {
         this.handlerThread.start();
         this.handler = new Handler(this.handlerThread.getLooper());
         this.setText("SEARCH");
-        this.setBackgroundColor(FlicApplication.getApp().getResources().getColor(R.color.flic_white));
-        this.setTextColor(FlicApplication.getApp().getResources().getColor(R.color.flic_gray1));
+        this.setBackgroundColor(FlicApplication.getApp().getResources().getColor(R.color.flic_red2));
+        this.setTextColor(FlicApplication.getApp().getResources().getColor(R.color.flic_white));
         super.setOnClickListener(new SearchClickListener());
     }
 
@@ -85,6 +86,8 @@ public class SearchButton extends Button {
     }
     private boolean animationRunning;
     private boolean firstDiscover;
+    private boolean searchRunning;
+    private String discoveredDeviceId;
     private RelativeLayout searchView;
     private TextView searchTitle;
     private ImageView searchIcon;
@@ -165,6 +168,7 @@ public class SearchButton extends Button {
     }
 
     private void startSearchAnimation() {
+        this.searchRunning = true;
         this.searchTitle = (TextView) searchView.findViewById(R.id.flic_search_status_title);
         this.searchIcon = (ImageView) searchView.findViewById(R.id.flic_search_status_icon);
         this.stopSearch = (ImageView) searchView.findViewById(R.id.flic_search_stop_search);
@@ -223,7 +227,7 @@ public class SearchButton extends Button {
         });
 
         if (FlicApplication.getApp().isBluetoothActive()) {
-            FlicApplication.getApp().getFlicService().startScan();
+            FlicApplication.getApp().startScan();
             this.firstDiscover = true;
             this.searchTitle.setText(this.getResources().getString(R.string.flic_search_searching_title));
             this.searchIcon.setVisibility(View.VISIBLE);
@@ -298,7 +302,8 @@ public class SearchButton extends Button {
     }
 
     private void noFlicsFoundFromSearch() {
-        FlicApplication.getApp().getFlicService().stopScan();
+        this.searchRunning = false;
+        FlicApplication.getApp().stopScan();
         this.animation.cancel();
         handler.removeCallbacks(this.endConnectAnimation);
         handler.removeCallbacks(this.endSearchAnimation);
@@ -335,7 +340,9 @@ public class SearchButton extends Button {
 
                 @Override
                 public void buttonReady(final String deviceId, final String UUID) {
-                    FlicApplication.getApp().getFlicService().stopScan();
+                    if (!searchRunning)
+                        return;
+                    FlicApplication.getApp().stopScan();
                     SearchButton.this.activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -346,7 +353,9 @@ public class SearchButton extends Button {
 
                 @Override
                 public void buttonConnectionFailed(String deviceId, final int status) {
-                    FlicApplication.getApp().getFlicService().stopScan();
+                    if (!searchRunning)
+                        return;
+                    FlicApplication.getApp().stopScan();
                     SearchButton.this.activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -357,6 +366,8 @@ public class SearchButton extends Button {
 
                 @Override
                 public void buttonDisconnected(final String deviceId, final int status) {
+                    if (!searchRunning)
+                        return;
                     SearchButton.this.activity.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -374,7 +385,8 @@ public class SearchButton extends Button {
             });
 
             this.firstDiscover = false;
-            FlicApplication.getApp().getFlicService().connectButton(deviceId);
+            this.discoveredDeviceId = deviceId;
+            FlicApplication.getApp().connectButton(deviceId);
             this.searchTitle.setText(this.getResources().getString(R.string.flic_search_flic_discovered_title));
             this.searchIcon.setBackground(this.getResources().getDrawable(R.drawable.main_add_flic_connecting_icon));
             this.searchAgain.setVisibility(View.GONE);
@@ -392,9 +404,14 @@ public class SearchButton extends Button {
     }
 
     private void flicDiscoveredFromSearchFailedToConnect(int status) {
+        this.searchRunning = false;
         handler.removeCallbacks(this.endConnectAnimation);
         this.animation.cancel();
-        FlicApplication.getApp().getFlicService().stopScan();
+        FlicApplication.getApp().stopScan();
+        if (discoveredDeviceId != null) {
+            FlicApplication.getApp().deleteButton(discoveredDeviceId);
+            discoveredDeviceId = null;
+        }
 
         switch (status) {
             case FlicError.BUTTON_IS_PRIVATE:
@@ -451,7 +468,7 @@ public class SearchButton extends Button {
                     @Override
                     public void onClick(View v) {
                         handler.removeCallbacks(SearchButton.this.endSearchAnimation);
-                        FlicApplication.getApp().getFlicService().stopScan();
+                        FlicApplication.getApp().stopScan();
                         endSearchAnimation();
                     }
                 });
@@ -496,7 +513,12 @@ public class SearchButton extends Button {
     }
 
     private void flicDiscoveredFromSearchConnectTimedOut() {
-        FlicApplication.getApp().getFlicService().stopScan();
+        this.searchRunning = false;
+        FlicApplication.getApp().stopScan();
+        if (discoveredDeviceId != null) {
+            FlicApplication.getApp().deleteButton(discoveredDeviceId);
+            discoveredDeviceId = null;
+        }
         this.animation.cancel();
         handler.removeCallbacks(this.endConnectAnimation);
         this.searchTitle.setText(this.getResources().getString(R.string.flic_search_no_connection_title));
@@ -517,7 +539,7 @@ public class SearchButton extends Button {
     }
 
     private void endSearchAnimation() {
-        FlicApplication.getApp().getFlicService().stopScan();
+        FlicApplication.getApp().stopScan();
         Animation animation = new TranslateAnimation(0, 0, 0, this.searchView.getHeight());
         animation.setDuration(500);
         animation.setFillAfter(true);
@@ -545,8 +567,9 @@ public class SearchButton extends Button {
     }
 
     private void flicConnectedFromSearch(final String deviceId, final String uuid) {
-        FlicApplication.getApp().getFlicService().stopScan();
-        FlicButton flicButton = new FlicButton(deviceId, uuid, FlicButton.FlicColor.FLIC_COLOR_MINT, true);
+        this.searchRunning = false;
+        FlicApplication.getApp().stopScan();
+        FlicButton flicButton = new FlicButton(deviceId, FlicButton.FlicColor.FLIC_COLOR_MINT, true);
         handler.removeCallbacks(this.endConnectAnimation);
         this.animation.cancel();
 
@@ -562,13 +585,6 @@ public class SearchButton extends Button {
         this.searchAgain.setVisibility(View.GONE);
         this.searchMainImage.setVisibility(View.VISIBLE);
         this.searchMainImage.setBackground(this.getResources().getDrawable(R.drawable.main_add_flic_mint_connected));
-        this.searchMainImage.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         this.searchDivider.setVisibility(View.INVISIBLE);
         this.searchInfoText.setVisibility(View.VISIBLE);
         this.searchInfoText.setText(this.getResources().getString(R.string.flic_search_connected_info_text));

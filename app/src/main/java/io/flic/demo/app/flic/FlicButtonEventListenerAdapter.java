@@ -1,4 +1,4 @@
-package io.flic.demo.app;
+package io.flic.demo.app.flic;
 
 public abstract class FlicButtonEventListenerAdapter implements FlicButtonEventListener {
 

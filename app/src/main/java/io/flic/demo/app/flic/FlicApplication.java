@@ -1,4 +1,4 @@
-package io.flic.demo.app;
+package io.flic.demo.app.flic;
 
 
 import android.app.Application;
@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Base64;
 import android.util.Log;
 
 import java.util.Collection;
@@ -68,7 +69,6 @@ public class FlicApplication extends Application {
                     String deviceId = flicButton.getButtonId().toLowerCase();
                     FlicButton button = new FlicButton(
                             deviceId,
-                            flicButton.getButtonUuid(),
                             FlicButton.FlicColor.FLIC_COLOR_MINT,
                             connected);
                     FlicApplication.this.buttons.put(button.getDeviceId(), button);
@@ -125,8 +125,64 @@ public class FlicApplication extends Application {
         return this.buttons.values();
     }
 
+    public void startScan() {
+        this.flicService.startScan();
+    }
+
+    public void stopScan() {
+        this.flicService.stopScan();
+    }
+
+    public void scanFor(int milliseconds) {
+        this.flicService.scanFor(milliseconds);
+    }
+
+    public void connectButton(String deviceId) {
+        if (!this.buttons.containsKey(deviceId)) {
+            FlicButton flicButton = new FlicButton(deviceId, FlicButton.FlicColor.FLIC_COLOR_MINT, false);
+            this.buttons.put(deviceId, flicButton);
+            for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
+                listener.buttonAdded(flicButton);
+            }
+        }
+        this.flicService.connectButton(deviceId);
+    }
+
+    public void disconnectButton(String deviceId) {
+        if (this.buttons.containsKey(deviceId)) {
+            this.flicService.disconnectButton(deviceId);
+        } else {
+            throw new RuntimeException("Unknown button");
+        }
+    }
+
+    public void deleteButton(String deviceId) {
+        if (this.buttons.containsKey(deviceId)) {
+            this.buttons.remove(deviceId);
+            this.flicService.deleteButton(deviceId);
+        }
+    }
+
+    private static byte[] hexToBytes(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+        for (int i = 0; i < len; i += 2) {
+            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
+                    + Character.digit(s.charAt(i + 1), 16));
+        }
+        return data;
+    }
+
+    public static String base64DeviceId(String deviceId) {
+        String hex = deviceId.substring(9).replace(":", "");
+        byte[] bytes = hexToBytes(hex);
+        return Base64.encodeToString(bytes, Base64.URL_SAFE | Base64.NO_WRAP);
+    }
+
     public void notifyButtonDiscover(String deviceId, int rssi, boolean isPrivateMode) {
-        if (this.whitelist.contains(deviceId)) {
+        String base64 = base64DeviceId(deviceId);
+
+        if (this.whitelist.contains(base64)) {
             for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
                 listener.buttonDiscovered(deviceId, rssi, isPrivateMode);
             }
@@ -149,28 +205,26 @@ public class FlicApplication extends Application {
 
     public void notifyButtonReady(String deviceId, String uuid) {
         FlicButton flicButton = this.buttons.get(deviceId);
-        if (flicButton == null) {
-            flicButton = new FlicButton(deviceId, uuid, FlicButton.FlicColor.FLIC_COLOR_MINT, true);
-            this.buttons.put(deviceId, flicButton);
+        if (flicButton != null) {
+            flicButton.setConnected();
             for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
-                listener.buttonAdded(flicButton);
+                listener.buttonReady(deviceId);
+            }
+
+            if (this.buttonEventListeners.containsKey(deviceId)) {
+                for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
+                    listener.buttonReady(deviceId, uuid);
+                }
             }
         } else {
-            flicButton.setConnected();
-        }
-        for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
-            listener.buttonReady(deviceId);
-        }
-
-        if (this.buttonEventListeners.containsKey(deviceId)) {
-            for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
-                listener.buttonReady(deviceId, uuid);
-            }
+            Log.i("FlicApplication", "notifyButtonReady: unknown button");
         }
     }
 
     public void notifyButtonConnectionFailed(String deviceId, int status) {
-        if (this.buttonEventListeners.containsKey(deviceId)) {
+        FlicButton flicButton = this.buttons.get(deviceId);
+        if (flicButton != null) {
+            flicButton.setDisconnected();
             for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
                 listener.buttonConnectionFailed(deviceId, status);
             }
@@ -181,14 +235,16 @@ public class FlicApplication extends Application {
         FlicButton flicButton = this.buttons.get(deviceId);
         if (flicButton != null) {
             flicButton.setDisconnected();
-        }
-        for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
-            listener.buttonDisconnected(deviceId, status);
-        }
-        if (this.buttonEventListeners.get(deviceId) != null) {
-            for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
+            for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
                 listener.buttonDisconnected(deviceId, status);
             }
+            if (this.buttonEventListeners.get(deviceId) != null) {
+                for (FlicButtonEventListener listener : this.buttonEventListeners.get(deviceId).values()) {
+                    listener.buttonDisconnected(deviceId, status);
+                }
+            }
+        } else {
+            Log.i("FlicApplication", "notifyButtonReady: unknown button");
         }
     }
 
@@ -198,7 +254,6 @@ public class FlicApplication extends Application {
                 listener.buttonDown(deviceId);
             }
         }
-
     }
 
     public void notifyButtonUp(String deviceId) {
@@ -233,7 +288,7 @@ public class FlicApplication extends Application {
         }
     }
 
-    public FlicService getFlicService() {
+    private FlicService getFlicService() {
         return this.flicService;
     }
 }

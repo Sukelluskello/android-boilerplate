@@ -1,4 +1,4 @@
-package io.flic.demo.app;
+package io.flic.demo.app.flic;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -12,6 +12,7 @@ import android.util.Log;
 
 import java.util.List;
 
+import io.flic.demo.app.R;
 import io.flic.demo.app.ui.MainActivity;
 import io.flic.lib.FlicButton;
 import io.flic.lib.FlicButtonAdapter;
@@ -238,7 +239,7 @@ public class FlicService extends Service {
         FlicButton button = this.manager.getButtonByDeviceId(deviceId);
         if (button != null) {
             this.manager.forgetButton(button);
-            Log.i("FlicService", "Deleted Button: " + deviceId);
+            Log.i("FlicService", "Deleted Button: " + deviceId, new Exception());
         } else {
             Log.i("FlicService", "deleteButton: Cant find button: " + deviceId);
         }
