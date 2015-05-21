@@ -48,7 +48,7 @@ public class MainActivity extends Activity {
     }
 
     private void setupWhitelist() {
-        FlicApplication.getApp().whitelistDeviceId("ATsA");
+        FlicApplication.getApp().whitelistDeviceId("");
     }
 
     @Override
