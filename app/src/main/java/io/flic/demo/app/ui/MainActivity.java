@@ -47,18 +47,12 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void setupWhitelist() {
-        FlicApplication.getApp().whitelistDeviceId("");
-    }
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         this.setContentView(R.layout.activity_main);
         this.list = (LinearLayout) this.findViewById(R.id.activity_main_list);
-
-        this.setupWhitelist();
 
         FlicApplication.getApp().addButtonUpdateListener(new FlicButtonUpdateListenerAdapter() {
 

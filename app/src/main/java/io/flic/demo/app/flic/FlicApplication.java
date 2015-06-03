@@ -21,7 +21,6 @@ public class FlicApplication extends Application {
     private static FlicApplication app;
     public BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private HashMap<String, FlicButton> buttons;
-    private Set<String> whitelist;
     private HashMap<String, FlicButtonUpdateListener> buttonListeners;
     private HashMap<String, HashMap<String, FlicButtonEventListener>> buttonEventListeners;
     private ServiceConnection serviceConnection;
@@ -39,14 +38,6 @@ public class FlicApplication extends Application {
         return bluetoothAdapter.isEnabled();
     }
 
-    public void whitelistDeviceId(String deviceId) {
-        whitelist.add(deviceId);
-    }
-
-    public void unWhitelistDeviceId(String deviceId) {
-        whitelist.remove(deviceId);
-    }
-
     @Override
     public void onCreate() {
         FlicApplication.app = this;
@@ -54,7 +45,6 @@ public class FlicApplication extends Application {
         this.buttons = new HashMap<>();
         this.buttonListeners = new HashMap<>();
         this.buttonEventListeners = new HashMap<>();
-        this.whitelist = new HashSet<>();
 
         Intent i = new Intent(this, FlicService.class);
         this.startService(i);
@@ -180,14 +170,8 @@ public class FlicApplication extends Application {
     }
 
     public void notifyButtonDiscover(String deviceId, int rssi, boolean isPrivateMode) {
-        String base64 = base64DeviceId(deviceId);
-
-        if (this.whitelist.contains(base64)) {
-            for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
-                listener.buttonDiscovered(deviceId, rssi, isPrivateMode);
-            }
-        } else {
-            Log.i("FlicApplication", "notifyButtonDiscover: deviceId not whitelisted");
+        for (FlicButtonUpdateListener listener : this.buttonListeners.values()) {
+            listener.buttonDiscovered(deviceId, rssi, isPrivateMode);
         }
     }
 
